@@ -1,0 +1,80 @@
+name: Record WebMCP live demo
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install recorder dependencies
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg xvfb unzip
+
+      - name: Locate Chrome
+        id: chrome
+        shell: bash
+        run: |
+          CHROME_PATH="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          test -n "$CHROME_PATH"
+          echo "path=$CHROME_PATH" >> "$GITHUB_OUTPUT"
+          "$CHROME_PATH" --version
+
+      - name: Download official WebMCP testing extension
+        shell: bash
+        run: |
+          mkdir -p /tmp/webmcp-ext
+          URL='https://clients2.google.com/service/update2/crx?response=redirect&prodversion=140.0.0.0&acceptformat=crx2,crx3&x=id%3Djigokfbbpcdckjmhbgapmikncfihboec%26uc'
+          curl --fail --location --retry 3 "$URL" -o /tmp/webmcp.crx
+          python - <<'PY'
+          import struct, zipfile, io, os
+          p='/tmp/webmcp.crx'
+          data=open(p,'rb').read()
+          if data[:4] != b'Cr24': raise SystemExit('not a CRX file')
+          ver=struct.unpack('<I',data[4:8])[0]
+          if ver == 3:
+              h=struct.unpack('<I',data[8:12])[0]; z=data[12+h:]
+          elif ver == 2:
+              pub,sig=struct.unpack('<II',data[8:16]); z=data[16+pub+sig:]
+          else: raise SystemExit(f'unsupported CRX version {ver}')
+          with zipfile.ZipFile(io.BytesIO(z)) as f: f.extractall('/tmp/webmcp-ext')
+          print(open('/tmp/webmcp-ext/manifest.json').read()[:1000])
+          PY
+
+      - name: Record real live WebMCP interaction
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.path }}
+          WEBMCP_EXTENSION_PATH: /tmp/webmcp-ext
+          LIVE_URL: https://webmcp-capability-navigator.vercel.app
+        run: |
+          xvfb-run -a node scripts/record-live-demo.mjs
+
+      - name: Convert browser recording to MP4
+        shell: bash
+        run: |
+          RAW="$(find artifacts/browser -type f -name '*.webm' | head -n 1)"
+          test -f "$RAW"
+          ffmpeg -y -i "$RAW" -an -c:v libx264 -preset medium -crf 18 -pix_fmt yuv420p -movflags +faststart artifacts/webmcp-live-browser-demo.mp4
+          ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 artifacts/webmcp-live-browser-demo.mp4
+
+      - name: Upload real-browser proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: webmcp-live-browser-demo
+          path: |
+            artifacts/webmcp-live-browser-demo.mp4
+            artifacts/browser/*.png
+          if-no-files-found: error
+          retention-days: 7
