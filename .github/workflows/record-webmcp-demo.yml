@@ -20,6 +20,7 @@ jobs:
       - name: Install recorder dependencies
         run: |
           npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install ffmpeg
           sudo apt-get update -y
           sudo apt-get install -y ffmpeg xvfb unzip
 
@@ -39,7 +40,7 @@ jobs:
           URL='https://clients2.google.com/service/update2/crx?response=redirect&prodversion=140.0.0.0&acceptformat=crx2,crx3&x=id%3Djigokfbbpcdckjmhbgapmikncfihboec%26uc'
           curl --fail --location --retry 3 "$URL" -o /tmp/webmcp.crx
           python - <<'PY'
-          import struct, zipfile, io, os
+          import struct, zipfile, io
           p='/tmp/webmcp.crx'
           data=open(p,'rb').read()
           if data[:4] != b'Cr24': raise SystemExit('not a CRX file')
