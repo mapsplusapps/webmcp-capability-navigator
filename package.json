@@ -1,0 +1,12 @@
+{
+  "name": "maps-plus-apps-webmcp-capability-navigator",
+  "version": "1.0.0",
+  "private": false,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "serve": "node scripts/serve.mjs",
+    "verify": "npm test && node scripts/verify-release.mjs && node --check src/core.mjs && node --check src/webmcp.mjs && node --check src/app.mjs"
+  },
+  "license": "MIT"
+}
