@@ -18,41 +18,45 @@ const context = await chromium.launchPersistentContext('/tmp/webmcp-demo-profile
   args: [
     '--no-first-run',
     '--no-default-browser-check',
+    '--enable-experimental-web-platform-features',
+    '--enable-features=WebMCP,WebMCPTesting,DevToolsWebMCPSupport',
     `--disable-extensions-except=${extensionPath}`,
     `--load-extension=${extensionPath}`,
   ],
 });
 
-await context.addInitScript(() => {
-  window.__webmcpRegisteredTools = Object.create(null);
-  const wrap = () => {
-    const mc = document.modelContext;
-    if (!mc || typeof mc.registerTool !== 'function' || mc.__demoWrapped) return false;
-    const original = mc.registerTool.bind(mc);
-    const wrapped = async (tool, options) => {
-      window.__webmcpRegisteredTools[tool.name] = tool;
-      return original(tool, options);
-    };
-    try { mc.registerTool = wrapped; }
-    catch { try { Object.defineProperty(mc, 'registerTool', { value: wrapped, configurable: true }); } catch {} }
-    try { Object.defineProperty(mc, '__demoWrapped', { value: true }); } catch {}
-    return true;
-  };
-  wrap();
-  let tries = 0;
-  const timer = setInterval(() => { if (wrap() || ++tries > 1000) clearInterval(timer); }, 10);
-});
-
 const page = context.pages()[0] || await context.newPage();
 const video = page.video();
 await page.goto(liveUrl, { waitUntil: 'networkidle', timeout: 90000 });
-await page.waitForTimeout(4500);
+await page.waitForTimeout(5000);
 
+await page.waitForFunction(() => !!document.modelContext, null, { timeout: 20000 }).catch(() => {});
 const statusText = await page.locator('#webmcp-status').innerText();
 console.log(`WEBMCP_STATUS=${statusText}`);
-if (!statusText.includes('WebMCP ready')) throw new Error(`Live browser did not report WebMCP ready: ${statusText}`);
-await page.waitForFunction(() => Object.keys(window.__webmcpRegisteredTools || {}).length === 6, null, { timeout: 20000 });
-console.log(`REGISTERED_TOOLS=${await page.evaluate(() => Object.keys(window.__webmcpRegisteredTools || {}).join(','))}`);
+const modelContextPresent = await page.evaluate(() => !!document.modelContext);
+console.log(`MODEL_CONTEXT_PRESENT=${modelContextPresent}`);
+if (!modelContextPresent || !statusText.includes('WebMCP ready')) {
+  throw new Error(`Live browser did not expose native WebMCP: ${statusText}`);
+}
+
+const toolNames = await page.evaluate(async () => {
+  const tools = await document.modelContext.getTools();
+  return tools.map((tool) => tool.name);
+});
+console.log(`REGISTERED_TOOLS=${toolNames.join(',')}`);
+if (toolNames.length !== 6) throw new Error(`Expected 6 WebMCP tools, found ${toolNames.length}: ${toolNames.join(',')}`);
+
+const expectedTools = [
+  'list_capabilities',
+  'get_capability',
+  'find_examples',
+  'draft_scope',
+  'prepare_decision_packet',
+  'stage_human_review',
+];
+for (const name of expectedTools) {
+  if (!toolNames.includes(name)) throw new Error(`Missing registered WebMCP tool: ${name}`);
+}
 
 await page.screenshot({ path: path.join(outDir, '01-webmcp-ready.png'), fullPage: false });
 
@@ -60,12 +64,12 @@ await page.evaluate(() => {
   const badge = document.createElement('div');
   badge.id = 'judge-demo-overlay';
   Object.assign(badge.style, {
-    position:'fixed', top:'18px', right:'18px', zIndex:'999999',
-    background:'#0c1b22', color:'#fff', border:'1px solid #22c7be',
-    padding:'11px 14px', borderRadius:'7px', font:'700 13px/1.25 ui-monospace, monospace',
-    boxShadow:'0 8px 30px rgba(12,27,34,.25)'
+    position: 'fixed', top: '18px', right: '18px', zIndex: '999999',
+    background: '#0c1b22', color: '#fff', border: '1px solid #22c7be',
+    padding: '11px 14px', borderRadius: '7px', font: '700 13px/1.25 ui-monospace, monospace',
+    boxShadow: '0 8px 30px rgba(12,27,34,.25)'
   });
-  badge.textContent = 'LIVE · WebMCP ready · 6 registered tools';
+  badge.textContent = 'LIVE · Native WebMCP ready · 6 registered tools';
   document.body.appendChild(badge);
 });
 
@@ -77,9 +81,10 @@ const pause = (ms = 1800) => page.waitForTimeout(ms);
 const callTool = async (name, input) => {
   await setOverlay(`AGENT → ${name}`);
   const result = await page.evaluate(async ({ name, input }) => {
-    const tool = window.__webmcpRegisteredTools?.[name];
+    const tools = await document.modelContext.getTools();
+    const tool = tools.find((candidate) => candidate.name === name);
     if (!tool) throw new Error(`registered tool missing: ${name}`);
-    return await tool.execute(input);
+    return await document.modelContext.executeTool(tool, JSON.stringify(input));
   }, { name, input });
   console.log(`TOOL_PASS=${name}`);
   await pause(1900);
@@ -92,12 +97,12 @@ await pause(2500);
 await page.screenshot({ path: path.join(outDir, '02-workspace-empty.png'), fullPage: false });
 
 const objective = 'Create a public-data operational dashboard';
-const capabilityIds = ['geospatial-public-data','rapid-response-data-automation','mobile-accessible-operations'];
-const constraints = ['Public data only','Mobile-first'];
+const capabilityIds = ['geospatial-public-data', 'rapid-response-data-automation', 'mobile-accessible-operations'];
+const constraints = ['Public data only', 'Mobile-first'];
 
-await callTool('list_capabilities', { problem:'public-data operational dashboard', delivery_pattern:'dashboard' });
-await callTool('get_capability', { capability_id:'geospatial-public-data' });
-await callTool('find_examples', { capability_ids: capabilityIds, problem:'public-data operational dashboard' });
+await callTool('list_capabilities', { problem: 'public-data operational dashboard', delivery_pattern: 'dashboard' });
+await callTool('get_capability', { capability_id: 'geospatial-public-data' });
+await callTool('find_examples', { capability_ids: capabilityIds, problem: 'public-data operational dashboard' });
 await page.locator('#agent-trace').scrollIntoViewIfNeeded();
 await page.screenshot({ path: path.join(outDir, '03-agent-trace.png'), fullPage: false });
 await pause(1800);
