@@ -1,12 +1,20 @@
-# Demo media
+# Demo media — submission lock
 
-The challenge demo media is generated from the exact Capability Navigator v17 release, live production captures, Sparkles' Veo motion pipeline, and Sparkles' ElevenLabs narration.
+The previously published 2:05.7 MP4 is **REJECTED and must not be used for judging**. Its visuals remain on the title treatment for nearly the entire narration and do not clearly demonstrate the application functioning.
 
-- **Final judge demo MP4:** https://fcfvjhnjvjpwdnwizzqv.supabase.co/storage/v1/object/public/content-library/webmcp/Capability-Navigator-WebMCP-Demo-FINAL.mp4
-- Verified size: **5,113,326 bytes**
-- SHA-256: **0b7c84574e1100116b04b0933261cf83e3f59b7cfaa0aa1e478f6452a6002e4c**
-- Verified duration: **125.67 seconds (2:05.7)**
-- Verified format: **1920×1080 · H.264 · 24 fps · AAC audio**
-- Live application: https://webmcp-capability-navigator.vercel.app
+Rejected asset SHA-256: `0b7c84574e1100116b04b0933261cf83e3f59b7cfaa0aa1e478f6452a6002e4c`
 
-The final public YouTube URL is recorded in the Devpost submission once publishing completes.
+## Required replacement
+
+The final Devpost video must be a public YouTube video under 3 minutes that visibly shows the live production app changing state while the audio explains the WebMCP implementation. At minimum the capture must show:
+
+1. `https://webmcp-capability-navigator.vercel.app` loading in a WebMCP-capable browser and reporting **WebMCP ready · 6 tools**.
+2. The live handoff workspace before agent action.
+3. Registered tool calls appearing in the visible **Agent trace**.
+4. `stage_human_review` updating the visible **Human-review packet**.
+5. A human editing a constraint and rebuilding the same shared workspace.
+6. The six-tool manifest / zero-external-action boundary.
+
+A manual-only recording workflow is committed at `.github/workflows/record-webmcp-demo.yml`; it uses `scripts/record-live-demo.mjs` to capture the real production URL with the WebMCP testing extension. It intentionally does not auto-run.
+
+Do not mark the Devpost entry submitted until the replacement YouTube URL is present and the final video has been watched end-to-end.
