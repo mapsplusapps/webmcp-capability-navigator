@@ -1,5 +1,5 @@
 import { chromium } from 'playwright';
-import { mkdirSync, existsSync, readdirSync } from 'node:fs';
+import { mkdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 
 const liveUrl = process.env.LIVE_URL || 'https://webmcp-capability-navigator.vercel.app';
@@ -14,6 +14,7 @@ const context = await chromium.launchPersistentContext('/tmp/webmcp-demo-profile
   headless: false,
   viewport: { width: 1600, height: 900 },
   recordVideo: { dir: outDir, size: { width: 1600, height: 900 } },
+  ignoreDefaultArgs: ['--disable-extensions'],
   args: [
     '--no-first-run',
     '--no-default-browser-check',
@@ -39,7 +40,7 @@ await context.addInitScript(() => {
   };
   wrap();
   let tries = 0;
-  const timer = setInterval(() => { if (wrap() || ++tries > 300) clearInterval(timer); }, 10);
+  const timer = setInterval(() => { if (wrap() || ++tries > 1000) clearInterval(timer); }, 10);
 });
 
 const page = context.pages()[0] || await context.newPage();
@@ -48,8 +49,10 @@ await page.goto(liveUrl, { waitUntil: 'networkidle', timeout: 90000 });
 await page.waitForTimeout(4500);
 
 const statusText = await page.locator('#webmcp-status').innerText();
+console.log(`WEBMCP_STATUS=${statusText}`);
 if (!statusText.includes('WebMCP ready')) throw new Error(`Live browser did not report WebMCP ready: ${statusText}`);
-await page.waitForFunction(() => Object.keys(window.__webmcpRegisteredTools || {}).length === 6, null, { timeout: 15000 });
+await page.waitForFunction(() => Object.keys(window.__webmcpRegisteredTools || {}).length === 6, null, { timeout: 20000 });
+console.log(`REGISTERED_TOOLS=${await page.evaluate(() => Object.keys(window.__webmcpRegisteredTools || {}).join(','))}`);
 
 await page.screenshot({ path: path.join(outDir, '01-webmcp-ready.png'), fullPage: false });
 
@@ -78,6 +81,7 @@ const callTool = async (name, input) => {
     if (!tool) throw new Error(`registered tool missing: ${name}`);
     return await tool.execute(input);
   }, { name, input });
+  console.log(`TOOL_PASS=${name}`);
   await pause(1900);
   return result;
 };
