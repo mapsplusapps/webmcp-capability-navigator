@@ -1,0 +1,17 @@
+{
+  "release": "webmcp-challenge-20260903",
+  "live_url": "https://webmcp-capability-navigator.vercel.app",
+  "vercel_deployment_id": "dpl_3PckUMmasnRLqdpmzM5EjRxoHmhv",
+  "deployment_archive_sha256": "61eb9d3cde282c256fa43d85bbb227bada54f6a3c4888bf9335f51b67cce1f2b",
+  "source_blobs": {
+    "src/app.mjs": "dd55c78aab248d654bcedc21d120977e3cd3bc12",
+    "src/core.mjs": "f7b1a31744e7449a8f20bbd952bbb68f2654f26f",
+    "src/data.mjs": "07f118c6703ee62886780cc402559190a611d4dc",
+    "src/webmcp.mjs": "3cf0b0935b24e53a66a4ba3ae85b5c932264f4cc"
+  },
+  "demo_media": {
+    "status": "REPLACE_BEFORE_SUBMISSION",
+    "rejected_sha256": "0b7c84574e1100116b04b0933261cf83e3f59b7cfaa0aa1e478f6452a6002e4c",
+    "reason": "The rejected cut does not visibly demonstrate the live application changing state."
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "expected_call_sequence": [
+    "list_capabilities",
+    "get_capability",
+    "find_examples",
+    "prepare_decision_packet",
+    "stage_human_review"
+  ],
+  "note": "Release fixture for the documented judge path; not a live-model score."
+}
