@@ -1,20 +1,44 @@
 # Demo media — submission lock
 
-The previously published 2:05.7 MP4 is **REJECTED and must not be used for judging**. Its visuals remain on the title treatment for nearly the entire narration and do not clearly demonstrate the application functioning.
+## Native WebMCP browser proof
 
-Rejected asset SHA-256: `0b7c84574e1100116b04b0933261cf83e3f59b7cfaa0aa1e478f6452a6002e4c`
+The production app was recorded in headed Google Chrome with native WebMCP enabled and the official WebMCP testing extension loaded.
 
-## Required replacement
+Verified GitHub Actions run: `33807187076`  
+Head SHA: `4cf4f5fa34e2572602413ac121bbf8aaa0e3039f`  
+Browser recording artifact: `webmcp-live-browser-demo` / artifact ID `9913424366`  
+Artifact ZIP SHA-256: `7be0d3804cb12d0b48f8fc9dfb4eaacb78fce6de410017442f54fa36181f9fa6`
 
-The final Devpost video must be a public YouTube video under 3 minutes that visibly shows the live production app changing state while the audio explains the WebMCP implementation. At minimum the capture must show:
+The run log proves:
 
-1. `https://webmcp-capability-navigator.vercel.app` loading in a WebMCP-capable browser and reporting **WebMCP ready · 6 tools**.
-2. The live handoff workspace before agent action.
-3. Registered tool calls appearing in the visible **Agent trace**.
-4. `stage_human_review` updating the visible **Human-review packet**.
-5. A human editing a constraint and rebuilding the same shared workspace.
-6. The six-tool manifest / zero-external-action boundary.
+- `WEBMCP_STATUS=WebMCP ready`
+- `MODEL_CONTEXT_PRESENT=true`
+- exactly six registered tools:
+  - `list_capabilities`
+  - `get_capability`
+  - `find_examples`
+  - `draft_scope`
+  - `prepare_decision_packet`
+  - `stage_human_review`
+- every one of those six tools completed successfully through native `document.modelContext.executeTool(...)`.
+- the browser recording shows the visible Agent Trace, an `AGENT-STAGED` Human Review packet, the human adding `Low-bandwidth field use`, and the packet becoming `HUMAN-BUILT`.
 
-A manual-only recording workflow is committed at `.github/workflows/record-webmcp-demo.yml`; it uses `scripts/record-live-demo.mjs` to capture the real production URL with the WebMCP testing extension. It intentionally does not auto-run.
+The raw native browser recording is 37.08 seconds at 1600×900.
 
-Do not mark the Devpost entry submitted until the replacement YouTube URL is present and the final video has been watched end-to-end.
+## Final judge cut
+
+The current YouTube-upload candidate is:
+
+`Capability-Navigator-WebMCP-Demo-SUBMIT-FINAL.mp4`
+
+- Runtime: **76.93 seconds**
+- Resolution: **1920×1080**
+- Video: H.264
+- Audio: AAC, Sparkles / ElevenLabs narration
+- SHA-256: `bf2eb6b593e9fc7994862dde61aff5e22392a3038215802b8eb516f77325bb0d`
+
+The cut begins immediately on the real production app and keeps the native WebMCP browser run as its backbone. It then uses short moving proof close-ups for Agent Trace, the `AGENT-STAGED` packet, the human-edited `HUMAN-BUILT` packet, and the six-tool / zero-external-action boundary. The earlier 2:05.7 and 1:30.7 cuts are rejected and must not be submitted.
+
+## Submission requirement
+
+The final Devpost video must be a **public YouTube URL** using the exact current judge cut above. After upload, verify the YouTube page is publicly accessible and then place that URL in Devpost before final submission.
