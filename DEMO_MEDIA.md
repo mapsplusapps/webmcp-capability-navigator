@@ -1,4 +1,22 @@
-# Demo media — submission lock
+# Demo media and browser proof
+
+## Public demo
+
+The completed Capability Navigator demo video is published on the public Devpost portfolio page:
+
+https://devpost.com/software/capability-navigator-give-browser-agents-tools-not-pixels
+
+The current public demo cut is:
+
+`Capability-Navigator-WebMCP-Demo-SUBMIT-FINAL.mp4`
+
+- Runtime: **76.93 seconds**
+- Resolution: **1920×1080**
+- Video: H.264
+- Audio: AAC, Sparkles / ElevenLabs narration
+- SHA-256: `bf2eb6b593e9fc7994862dde61aff5e22392a3038215802b8eb516f77325bb0d`
+
+The cut begins immediately on the real production app, keeps the native WebMCP browser run as its backbone, and uses short moving proof close-ups for Agent Trace, the `AGENT-STAGED` packet, the human-edited `HUMAN-BUILT` packet, and the six-tool / zero-external-action boundary.
 
 ## Native WebMCP browser proof
 
@@ -25,20 +43,10 @@ The run log proves:
 
 The raw native browser recording is 37.08 seconds at 1600×900.
 
-## Final judge cut
+## Verification scope
 
-The current YouTube-upload candidate is:
+The verified claim is native WebMCP behavior in the Chrome acceptance run above. This document does not claim independent acceptance in every browser or agent client.
 
-`Capability-Navigator-WebMCP-Demo-SUBMIT-FINAL.mp4`
+## Historical challenge note
 
-- Runtime: **76.93 seconds**
-- Resolution: **1920×1080**
-- Video: H.264
-- Audio: AAC, Sparkles / ElevenLabs narration
-- SHA-256: `bf2eb6b593e9fc7994862dde61aff5e22392a3038215802b8eb516f77325bb0d`
-
-The cut begins immediately on the real production app and keeps the native WebMCP browser run as its backbone. It then uses short moving proof close-ups for Agent Trace, the `AGENT-STAGED` packet, the human-edited `HUMAN-BUILT` packet, and the six-tool / zero-external-action boundary. The earlier 2:05.7 and 1:30.7 cuts are rejected and must not be submitted.
-
-## Submission requirement
-
-The final Devpost video must be a **public YouTube URL** using the exact current judge cut above. After upload, verify the YouTube page is publicly accessible and then place that URL in Devpost before final submission.
+This media package was originally prepared for the 2026 WebMCP Challenge. The final competition submission was not completed before the deadline, so the project was not included in judging. The Devpost page and media are retained as public portfolio artifacts, and the challenge-era evidence remains in the repository for provenance.
