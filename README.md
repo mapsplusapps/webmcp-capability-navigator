@@ -1,3 +1,31 @@
+# Capability Navigator — Inspection Workflow Demo
+
+The main route now demonstrates a synthetic inspection workflow: request → evidence → human review → browser-local saved work order. The October 1, 2026 fixture contains three assets. It is a public reference demo, not a client implementation or a Google-delivered project.
+
+## Try the new workflow
+
+1. Select **Run guided demo**. This executes a fixed deterministic tool sequence, not an LLM chat.
+2. Inspect the source record and editable draft. Nothing has been saved.
+3. Change the title, task, priority or assignee, then select **Approve & save demo work order**.
+4. Refresh: the approved record persists in this browser. It is not dispatched externally or shared between users.
+5. Select another asset to prepare a new draft, or reset to clear this browser’s demo data.
+
+## Native tools
+
+The root registers four tools through `document.modelContext.registerTool`: `list_overdue_inspections`, `get_inspection_evidence`, `prepare_work_order`, and `stage_work_order_review`. There is no approval or save tool. These tools share the same deterministic model and visible review workspace as the human controls. The first three read/prepare; the fourth stages reversible tab-local state.
+
+WebMCP needs a compatible enabled browser. Ordinary browsers retain the full guided and human flow. Tool registration alone is not proof of live agent orchestration. The new browser acceptance workflow must pass at the tested revision before making a fresh native-WebMCP claim.
+
+## Verification and portfolio boundary
+
+`npm run verify` covers the original reference and the new inspection logic. `scripts/verify-inspection-browser.mjs` checks browser interaction, edited approval, refresh persistence, asset switching, discard, denied scripted submission, responsive layouts and native tools when supported. CI requires native support and uploads screenshots plus its report.
+
+Use this example for agent-ready browser workflows and WebMCP work. Do not label it an MCP server, live municipal deployment, Google client delivery, shared operational backend, autonomous dispatch system or live AI chat. Public access and native browser acceptance must be verified before marking it ready for proposal use.
+
+The original six-tool capability reference is preserved at `/capabilities.html`. Historical challenge proof below applies to that reference and its recorded revision, not to the new inspection tools.
+
+---
+
 # Maps + Apps · WebMCP Capability Navigator
 
 **Agents should not have to guess what your website means. Give them tools, not pixels.**
@@ -104,3 +132,4 @@ The Devpost page is retained as a public portfolio/demo artifact. [`HACKATHON.md
 ## License
 
 MIT. See [`LICENSE`](./LICENSE).
+

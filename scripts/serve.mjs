@@ -10,12 +10,12 @@ const headers = {
   'Permissions-Policy': 'tools=(self)',
   'X-Content-Type-Options': 'nosniff'
 };
-const contentTypes = { '.html':'text/html; charset=utf-8', '.mjs':'text/javascript; charset=utf-8', '.json':'application/json; charset=utf-8' };
+const contentTypes = { '.html':'text/html; charset=utf-8', '.mjs':'text/javascript; charset=utf-8', '.json':'application/json; charset=utf-8', '.css':'text/css; charset=utf-8' };
 
 http.createServer(async (req, res) => {
   const requested = (req.url || '/').split('?')[0];
   const file = requested === '/' ? 'index.html' : requested.replace(/^\//, '');
-  if (!['index.html','src/app.mjs','src/core.mjs','src/data.mjs','src/webmcp.mjs','vercel.json'].includes(file)) {
+  if (!['index.html','capabilities.html','src/inspection-app.mjs','src/inspection-core.mjs','src/inspection.css','src/app.mjs','src/core.mjs','src/data.mjs','src/webmcp.mjs','vercel.json'].includes(file)) {
     res.writeHead(404, { ...headers, 'Content-Type':'text/plain; charset=utf-8' });
     res.end('Not found');
     return;
@@ -29,3 +29,4 @@ http.createServer(async (req, res) => {
     res.end('Not found');
   }
 }).listen(port, '127.0.0.1', () => console.log(`Capability Navigator: http://127.0.0.1:${port}`));
+

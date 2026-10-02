@@ -1,0 +1,33 @@
+name: Inspection demo acceptance
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm run verify
+      - run: npm install --no-save --package-lock=false playwright@1.55.0
+      - run: |
+          node scripts/serve.mjs > /tmp/inspection-server.log 2>&1 &
+          for attempt in 1 2 3 4 5; do curl -fsS http://127.0.0.1:4173/ && break || sleep 1; done
+      - name: Native browser acceptance
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+          HEADED: '1'
+          REQUIRE_NATIVE: '1'
+        run: xvfb-run -a node scripts/verify-inspection-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: inspection-browser-evidence
+          path: artifacts/inspection-browser
+          retention-days: 30

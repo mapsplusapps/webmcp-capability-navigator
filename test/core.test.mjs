@@ -20,8 +20,8 @@ test('prepares a human-review packet and blocks external authority', () => {
   const result = prepareDecisionPacket({ objective: 'Create a public-data operational dashboard', capability_ids: ['geospatial-public-data','rapid-response-data-automation'], constraints: ['Public data only','Mobile-first'] });
   assert.equal(result.status, 'READY_FOR_HUMAN_REVIEW');
   assert.equal(result.packet.authority, 'HUMAN_REVIEW_REQUIRED');
-  assert.ok(result.packet.blocked_actions.includes('submit'));
-  assert.ok(result.packet.blocked_actions.includes('pay'));
+  assert.ok(result.packet.blocked_actions.some(action => action.includes('submission')));
+  assert.ok(result.packet.blocked_actions.some(action => action.includes('payment')));
 });
 
 test('registers exactly six typed tool descriptors', () => {

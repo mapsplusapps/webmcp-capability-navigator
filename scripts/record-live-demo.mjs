@@ -2,7 +2,7 @@ import { chromium } from 'playwright';
 import { mkdirSync, existsSync } from 'node:fs';
 import path from 'node:path';
 
-const liveUrl = process.env.LIVE_URL || 'https://webmcp-capability-navigator.vercel.app';
+const liveUrl = process.env.LIVE_URL || 'https://webmcp-capability-navigator.vercel.app/capabilities.html';
 const chromePath = process.env.CHROME_PATH || '/usr/bin/google-chrome';
 const extensionPath = process.env.WEBMCP_EXTENSION_PATH;
 const outDir = path.resolve('artifacts/browser');
@@ -131,3 +131,4 @@ await context.close();
 const rawPath = await video.path();
 console.log(`RAW_VIDEO=${rawPath}`);
 console.log(`CAPTURE_DIR=${outDir}`);
+
