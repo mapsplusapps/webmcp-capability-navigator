@@ -31,3 +31,26 @@ jobs:
           name: inspection-browser-evidence
           path: artifacts/inspection-browser
           retention-days: 30
+
+  public:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --package-lock=false playwright@1.55.0
+      - name: Public browser acceptance
+        env:
+          LIVE_URL: https://webmcp-capability-navigator.vercel.app
+          CHROME_PATH: /usr/bin/google-chrome
+          HEADED: '1'
+          REQUIRE_NATIVE: '1'
+        run: xvfb-run -a node scripts/verify-inspection-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: inspection-public-browser-evidence
+          path: artifacts/inspection-browser
+          retention-days: 30

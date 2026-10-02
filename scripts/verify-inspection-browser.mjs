@@ -1,6 +1,7 @@
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
-import {mkdir,writeFile} from 'node:fs/promises';
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 const base=process.env.LIVE_URL||'http://127.0.0.1:4173';
 const out='artifacts/inspection-browser';
 await mkdir(out,{recursive:true});
@@ -17,6 +18,18 @@ try{
   const response=await page.goto(base,{waitUntil:'networkidle'});
   assert.equal(response.status(),200,'anonymous site access');
   await page.locator('#run').waitFor();
+  if(process.env.LIVE_URL){
+    for(const file of ['index.html','src/inspection-app.mjs','src/inspection-core.mjs','src/inspection.css']){
+      const res=await context.request.get(base+'/'+file);
+      assert.equal(res.status(),200,'public resource '+file);
+      const actual=createHash('sha256').update(await res.body()).digest('hex');
+      const expected=createHash('sha256').update(await readFile(file)).digest('hex');
+      assert.equal(actual,expected,'deployed content matches checkout: '+file);
+    }
+    assert.equal(response.headers()['cross-origin-opener-policy'],'same-origin');
+    assert.equal(response.headers()['cross-origin-embedder-policy'],'require-corp');
+    report.checks.push('anonymous public resources, deployment headers and exact source hashes');
+  }
   assert.match(await page.title(),/Capability Navigator/);
   await page.locator('#run').click();
   await page.locator('#approve').waitFor();
@@ -76,6 +89,17 @@ try{
   assert.equal(await page.locator('#webmcp-status').count(),1);
   assert.deepEqual(errors,[]);
   report.checks.push('original capability reference retained; no browser errors');
+  const blockedContext=await browser.newContext();
+  await blockedContext.addInitScript(()=>{Storage.prototype.setItem=()=>{throw new DOMException('Storage denied','QuotaExceededError');};});
+  const blockedPage=await blockedContext.newPage();
+  await blockedPage.goto(base,{waitUntil:'networkidle'});
+  await blockedPage.locator('#run').click();await blockedPage.locator('#approve').waitFor();
+  await blockedPage.locator('#approve').click();
+  assert.match(await blockedPage.locator('#save-error').innerText(),/Not saved/);
+  assert.equal(await blockedPage.locator('#approve').count(),1);
+  assert.equal(await blockedPage.evaluate(()=>localStorage.getItem('capability-navigator:inspection-orders:v1')),null);
+  await blockedContext.close();
+  report.checks.push('blocked browser storage keeps draft and never reports saved');
   await context.close();
   report.status='PASS';
 }catch(error){report.status='FAIL';report.error=error.stack;process.exitCode=1;}
