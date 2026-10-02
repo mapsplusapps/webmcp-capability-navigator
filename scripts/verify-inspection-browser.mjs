@@ -51,8 +51,13 @@ try{
       await page.evaluate(async name=>{
         const tools=await document.modelContext.getTools();const tool=tools.find(t=>t.name===name);
         const input=name==='list_overdue_inspections'?{}:{asset_id:'PS-014'};
-        // Native API changed to object arguments; use the current form.
-        await document.modelContext.executeTool(tool,input);
+        // Older enabled Chrome versions require JSON arguments.
+        // Only retry a parse failure, which occurs before tool invocation.
+        try { await document.modelContext.executeTool(tool,input); }
+        catch(error) {
+          if(!String(error.message).includes('Failed to parse input arguments')) throw error;
+          await document.modelContext.executeTool(tool,JSON.stringify(input));
+        }
       },name);
     }
     await page.locator('#approve').waitFor();
