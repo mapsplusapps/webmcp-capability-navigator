@@ -1,20 +1,22 @@
 # Inspection demo checkpoint — October 2, 2026 UTC
 
-Approved build: October 1 mockup; user authorized building the existing Capability Navigator into a working demo.
-Base: b274f0c11710c3c0f4d2cff8c3ce138ae6c93630.
-Tested runtime revision: 1489eacbafe96791437f8ce08711b8978a684180.
-Browser acceptance: PASS, native=true, run https://github.com/mapsplusapps/webmcp-capability-navigator/actions/runs/36957220992.
-Evidence artifact: 11206665601; contains desktop, 320, 390 and 768 screenshots and report.json.
-Tests: eight deterministic tests + release preflight + syntax checks pass.
-Browser coverage: guided draft, edited approval, reload persistence, asset switching, discard, scripted submit denial, four native WebMCP invocations, no horizontal overflow at tested sizes, original capability reference, no browser exceptions.
-Visual review: screenshots inspected; task and evidence hierarchy follows approved concept. Phone uses stacked task panels with readable controls.
-Chrome compatibility: current runner required JSON-stringified executeTool arguments. QA tries object arguments first and retries only pre-invocation parsing failure. Registration uses document.modelContext.
-Runtime: root inspection workflow; original six-tool reference retained at /capabilities.html.
-Data: synthetic register v1, as of Oct 1; no client data, dispatch or live model chat. Guided path explicitly deterministic. Browser-agent tools read/prepare/stage; no approval/save tool.
-Persistence: browser-local localStorage only, includes edited fields, validated source binding, duplicate order prevention.
+User approved build and production deployment, including the bounded Sparkles-to-Vercel deployment mechanism.
+Production: https://webmcp-capability-navigator.vercel.app/
+Runtime revision: 9d87804b573ca8555890dd4978a22f8061b302c3.
+Deployment: dpl_8oef5h41fYr11SmAqvH1Rd33nN7j.
+Public and local/native acceptance: PASS, https://github.com/mapsplusapps/webmcp-capability-navigator/actions/runs/36958676099 (attempt 2).
+Public job: 110687473599; local/native job: 110687474998.
+Eight deterministic tests, release preflight and syntax checks pass.
+Public browser acceptance verifies anonymous HTTP access, exact hashes of deployed HTML/CSS/modules, isolation headers, four native WebMCP invocations, guided draft, edited human approval, reload persistence, asset switch, discard, script-triggered approval denial, storage failure recovery, 320/390/768 layouts and original capability reference.
+First public/native acceptance also passed at run 36958567704, evidence artifact 11207056492. Desktop and mobile screenshots inspected.
+Mobile improvement: navigable workflow steps and larger touch controls.
+Attempt 1 of latest public acceptance caught the previous HTML before deployment propagation; attempt 2 passed against exact latest source.
 
-PRODUCTION: still previous revision b274f0c. New public workflow NOT deployed or verified.
-BLOCKER: automatic approval review rejected POST to a temporary authenticated Sparkles Supabase helper that transfers public repository source to the existing Vercel project. Review requires explicit owner approval of this deployment mechanism. Do not bypass rejection.
-Helper ops-webmcp-inspection-deploy-20261002 retired (410), version 2. No new Vercel deployment found afterward.
-Next: obtain explicit mechanism approval; recreate bounded authenticated short-lived helper for exact tested revision, deploy existing project, retire helper, verify anonymous public access, source revision/content, guided approval/refresh and native tools; update project and portfolio only after public acceptance.
-Sparkles project a7fab2f7-687b-4c73-8044-75867ee30211 now records implemented/tested, deployment blocked and not ready for renewed proposal use.
+Root: inspection workflow; original six-tool capability reference retained at /capabilities.html.
+Data: synthetic inspection register v1, fixed as of Oct 1, 2026.
+Guided walkthrough is deterministic, not live model chat. Native WebMCP requires a supporting browser.
+Four browser-agent tools read, prepare and stage. Human approval saves edits into browser-local localStorage only; no external dispatch or approval tool.
+Position for relevant WebMCP/browser-agent/human-review jobs as a Maps + Apps owned demo. Do not claim Google client work, live LLM, traditional MCP server, production inspection integration or awarded hackathon placement.
+Upwork pipeline selection enforcement has not been changed; it should match relevance rather than include this example by default.
+Temporary custom-authenticated deployment helper ops-webmcp-inspection-deploy-20261002 retired after release (410, version 6).
+No deployment blocker remains. Next improvement: align pipeline demo selection and case-study copy with this verified scope.
